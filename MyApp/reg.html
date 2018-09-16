@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">用户注册</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group" style="margin-top: 15px;">
+				<div class="mui-input-row">
+					<label>用户名</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入用户名" id="username">
+				</div>
+				<div class="mui-input-row">
+					<label>密码</label>
+					<input type="password" class="mui-input-password" placeholder="请输入密码" id="pwd">
+				</div>
+				<div class="mui-input-row">
+					<label>确认密码</label>
+					<input type="password" class="mui-input-password" placeholder="请输入密码" id="repwd">
+				</div>
+				<div class="mui-input-row">
+					<label>昵称</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入昵称" id="nickname">
+				</div>
+				<div class="mui-input-row mui-radio mui-left">
+					<label>男</label>
+					<input name="gender" type="radio" value="1">
+				</div>
+				<div class="mui-input-row mui-radio mui-left">
+					<label>女</label>
+					<input name="gender" type="radio" value="2" checked>
+				</div>
+				<div class="mui-input-row">
+					<label>年龄</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入年龄" id="age">
+				</div>
+				<div class="mui-input-row">
+					<label>电话</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入电话" id="phone">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="reg">注册</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-action-back">返回</button>
+				</div>
+			</form>
+		</div>
+	</body>
+
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<!--加载md5-->
+	<script src="js/md5.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		// id为reg的标签绑定点击事件
+		document.getElementById("reg").addEventListener("tap",function(){
+			
+			// 获取所有性别列表
+			var gender_list = document.getElementsByName("gender")
+
+			var pwd = document.getElementById("pwd").value;  //密码
+			
+			if (pwd.length == 0){
+				mui.toast("密码不能为空")
+				return
+			}
+			
+			var repwd = document.getElementById("repwd").value;  //确认密码
+			// 判断2次密码
+			if(pwd != repwd) {
+				mui.toast("两次密码输入不一致")
+				return
+			}
+			// md5方法为md5.min.js内置方法
+			pwd = md5(pwd);  //使用md5方法对密码做md5
+
+			var username = document.getElementById("username").value;  //用户名
+			var age = document.getElementById("age").value;  //年龄
+			var nickname = document.getElementById("nickname").value;  //昵称
+			var phone = document.getElementById("phone").value;  //电话
+
+			var gender = null;  //性别
+			// 遍历性别列表
+			for(var i = 0; i < gender_list.length; i++) {
+				// checked表示选中，当标签被被选中时
+				if(gender_list[i].checked) {
+					// 获取选中的性别，i表示索引
+					gender = gender_list[i].value;
+				}
+			}
+			
+			// 发送POST请求
+			mui.post(
+				// window.serv + "/reg"表示 http://192.168.11.85:9527/reg
+				window.serv + "/reg", {
+					// 下面是需要发送的键值对
+					username: username,
+					password: pwd,
+					gender: gender,
+					age: age,
+					nickname: nickname,
+					phone: phone
+				},
+				function(data){
+					// 由于后端返回的是json，这里需要反序列化
+					console.log(JSON.stringify(data))
+					if (!data.code){
+						mui.toast(data.msg)
+					}else{
+						mui.toast(data.msg)
+					}
+				}
+			)
+			
+		})
+	</script>
+
+</html>

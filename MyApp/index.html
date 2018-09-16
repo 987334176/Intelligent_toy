@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="index">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" id="phone">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">电话</span>
+			</a>
+			<a class="mui-tab-item">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">邮件</span>
+			</a>
+			<a class="mui-tab-item" id="login">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">设置</span>
+			</a>
+		</nav>
+	</body>
+	<script type="text/javascript" charset="utf-8">
+		mui.init({
+			subpages: [{
+				url: "main.html",
+				id: "main.html",
+				styles: window.styles
+			}]
+		});
+		mui.plusReady(function() {
+			console.log(JSON.stringify(plus.webview.currentWebview()))
+		});
+
+		document.getElementById("phone").addEventListener("tap", function() {
+			mui.toast("你點擊了電話按鈕");
+
+			mui.openWindow({
+				url: "phone.html",
+				id: "phone.html",
+				styles: window.styles,
+				extras: {
+					user_id: 123456
+				}
+			})
+		})
+
+		document.getElementById("index").addEventListener("tap", function() {
+			mui.openWindow({
+				url: "main.html",
+				id: "main.html",
+				styles: window.styles
+			})
+		})
+
+		document.getElementById("login").addEventListener("tap", function() {
+			mui.openWindow({
+				url: "login.html",
+				id: "login.html",
+				styles: window.styles
+			})
+		})
+		
+		document.addEventListener("login",function(data){
+			// fire事件接收消息，使用data.detail
+			// index是为做显示区分
+			mui.toast("index"+data.detail.msg)
+		})
+	</script>
+
+</html>

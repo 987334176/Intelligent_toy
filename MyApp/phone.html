@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">電話</h1>
+		</header>
+		<div class="mui-content">
+			<button type="button"
+				 class="mui-btn mui-btn-blue mui-btn-block" 
+				 id="btn">显示我的User_id</button>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		mui.back = function(){};
+
+		// 加载HTML5Puls
+		mui.plusReady(function() {
+			
+//			var Sdata = plus.webview.currentWebview();
+//			mui.alert(Sdata.user_id);
+
+		});
+
+		document.getElementById("btn").addEventListener("tap", function(){
+			
+			// 只要用到 plus 就一定要在  mui.plusReady 之后
+//			var Sdata = plus.webview.currentWebview();
+//			console.log(JSON.stringify(Sdata))
+//			mui.alert(Sdata.user_id);
+			var main = plus.webview.getWebviewById("HBuilder");
+			mui.fire(main,"talk",{talk:"我让你说啥，你就给我说啥"})
+
+
+		})
+	</script>
+
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">首页</h1>
+		</header>
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<div class="mui-content">
+					<div id="slider" class="mui-slider">
+						<div class="mui-slider-group mui-slider-loop">
+							<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+							<div class="mui-slider-item mui-slider-item-duplicate">
+								<a href="#">
+									<img src="http://placehold.it/400x300">
+								</a>
+							</div>
+							<!-- 第一张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1537023056923&amp;di=e50b27f1a9d34e586e421b50ff5cc0b0&amp;imgtype=0&amp;src=http%3A%2F%2Fatt.bbs.duowan.com%2Fforum%2F201508%2F18%2F173910p7045xys71x4zfyh.jpg"
+										width="300px" height="400px">
+								</a>
+							</div>
+							<!-- 第二张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="http://placehold.it/400x300">
+								</a>
+							</div>
+							<!-- 第三张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="http://placehold.it/400x300">
+								</a>
+							</div>
+							<!-- 第四张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="http://placehold.it/400x300">
+								</a>
+							</div>
+							<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+							<div class="mui-slider-item mui-slider-item-duplicate">
+								<a href="#">
+									<img src="http://placehold.it/400x300">
+								</a>
+							</div>
+						</div>
+						<div class="mui-slider-indicator">
+							<div class="mui-indicator mui-active"></div>
+							<div class="mui-indicator"></div>
+							<div class="mui-indicator"></div>
+							<div class="mui-indicator"></div>
+						</div>
+					</div>
+					<ul class="mui-table-view mui-grid-view mui-grid-9">
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+							<a href="#">
+								<span class="mui-icon mui-icon-home"></span>
+								<div class="mui-media-body">Home</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+							<a href="#">
+								<span class="mui-icon mui-icon-email"><span class="mui-badge mui-badge-red">5</span></span>
+								<div class="mui-media-body">Email</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+							<a href="#">
+								<span class="mui-icon mui-icon-chatbubble"></span>
+								<div class="mui-media-body">Chat</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+							<a href="#">
+								<span class="mui-icon mui-icon-location"></span>
+								<div class="mui-media-body">Location</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+							<a href="#">
+								<span class="mui-icon mui-icon-search"></span>
+								<div class="mui-media-body">Search</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+							<a href="#">
+								<span class="mui-icon mui-icon-phone"></span>
+								<div class="mui-media-body">Phone</div>
+							</a>
+						</li>
+					</ul>
+					<ul class="mui-table-view" id="content_list">
+
+					</ul>
+				</div>
+			</div>
+
+		</div>
+	</body>
+
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		mui('.mui-scroll-wrapper').scroll()
+		mui.back = function() {
+			mui.toast("不让你点")
+		};
+		
+		mui.plusReady(function(){
+			mui.post(
+				window.serv+"/content_list",
+				{},
+				function(data){
+					console.log(JSON.stringify(data));
+					
+					for (var i = 0; i < data.data.length; i++) {
+						create_content(data.data[i])
+					}
+				}
+			)
+			
+		})
+		
+		document.addEventListener("talk",function(data){
+			mui.toast(data.detail.talk);
+		})
+		
+		function create_content(content){		
+			var litag = document.createElement("li");
+			litag.className = "mui-table-view-cell mui-media";
+			var atag = document.createElement("a");
+			atag.id = content._id;
+			// 点击事件 周一把这儿写了
+			
+			var imgtag = document.createElement("img");
+			imgtag.className = "mui-media-object mui-pull-left";
+			
+			imgtag.src = window.serv_imge + content.avatar;
+			console.log(window.serv_imge + content.avatar);
+			
+			var divtag = document.createElement("div");
+			divtag.className = "mui-media-body";
+			divtag.innerText = content.title;
+			var ptag = document.createElement("p");
+			ptag.className = "mui-ellipsis";
+			ptag.innerText = content.intro;
+		 	
+		 	litag.appendChild(atag);
+		 	atag.appendChild(imgtag);
+		 	atag.appendChild(divtag);
+		 	divtag.appendChild(ptag);
+		 	
+		 	document.getElementById("content_list").appendChild(litag);
+		
+		}
+		
+	</script>
+
+</html>

@@ -1,0 +1,18 @@
+{
+	"index.html": {
+		"refer": [
+			"phone.html",
+			"main.html",
+			"login.html"
+		],
+		"resources": [
+			"main.html"
+		]
+	},
+	"login.html": {
+		"refer": [
+			"reg.html",
+			"user_info.html"
+		]
+	}
+}

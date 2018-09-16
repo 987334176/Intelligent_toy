@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">登陆</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row" style="margin-top: 15px;">
+					<label>用户名</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入用户名" id="username">
+				</div>
+				<div class="mui-input-row">
+					<label>密码</label>
+					<input type="password" class="mui-input-password" placeholder="请输入密码" id="pwd">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-red" id="login">登陆</button>
+					<button type="button" class="mui-btn mui-btn-green" id="reg">注册</button>
+				</div>
+			</form>
+		</div>
+	</body>
+
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<!--加载md5-->
+	<script src="js/md5.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		document.getElementById("login").addEventListener("tap", function() {
+			var uname = document.getElementById("username").value;
+			var pwd = document.getElementById("pwd").value;
+			pwd = md5(pwd);
+			
+			mui.post(
+				window.serv + "/login", {
+					username: uname,
+					password: pwd
+				},
+				function(data) {
+					// 由于后端返回的是json，这里需要反序列化
+					console.log(JSON.stringify(data))
+					if (!data.code){
+						// mui.toast(data.msg)
+						// index页面的WebviewById为HBuilder
+						//var index = plus.webview.getWebviewById("HBuilder")
+						// 触发fire事件,发送数据
+						//mui.fire(index,"login",{msg:data.msg + data.data.user_id})
+						mui.toast(data.msg + data.data.user_id);
+						//window.location.Storage.setItem("user",data.data.user_id);
+						plus.storage.setItem("user", data.data.user_id);
+						mui.openWindow({
+							url:"user_info.html",
+							id:"user_info.html",
+							styles:window.styles,
+							extras:{
+								user_id:data.data.user_id
+							}
+						});
+					}else{
+						mui.toast(data.msg)
+					}
+				}
+			);
+		});
+
+		document.getElementById("reg").addEventListener("tap", function() {
+			mui.openWindow({
+				url: "reg.html",
+				id: "reg.html"
+			})
+		})
+	</script>
+
+</html>
