@@ -56,6 +56,14 @@
 ## 效果
 首页：
 
+![Image text](https://github.com/987334176/Intelligent_toy/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE/%E9%A6%96%E9%A1%B5.png)
 
+登录：
+
+![Image text](https://github.com/987334176/Intelligent_toy/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE/%E7%99%BB%E5%BD%95.png)
+
+注册：
+
+![Image text](https://github.com/987334176/Intelligent_toy/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE/%E7%94%A8%E6%88%B7%E6%B3%A8%E5%86%8C.png)
 
 Copyright (c) 2018-present, xiao You
