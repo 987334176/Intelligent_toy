@@ -30,6 +30,7 @@
 		</nav>
 	</body>
 	<script type="text/javascript" charset="utf-8">
+		var ws = null;  // websocket对象
 		mui.init({
 			subpages: [{
 				url: "main.html",
@@ -38,7 +39,14 @@
 			}]
 		});
 		mui.plusReady(function() {
-			console.log(JSON.stringify(plus.webview.currentWebview()))
+//			console.log(JSON.stringify(plus.webview.currentWebview()))
+			if(plus.storage.getItem("user")) {  // 判断是否登录
+				console.log('已结登录了！');
+				//连接websocket连接
+				ws = new WebSocket("ws://"+window.ws_serv+"/app/"+plus.storage.getItem("user"))
+				// 客户端接收服务端数据时触发
+				ws.onmessage = function() {};
+			} 
 		});
 
 		document.getElementById("phone").addEventListener("tap", function() {
@@ -74,7 +82,20 @@
 			// fire事件接收消息，使用data.detail
 			// index是为做显示区分
 			mui.toast("index"+data.detail.msg)
-		})
+		});
+		
+		document.addEventListener("send_music", function(data) {  //监听send_music事件
+			var music_name = data.detail.music_name;  //获取player.html使用fire发送的music_name值
+			var toy_id = data.detail.toy_id;  //获取发送的玩具id
+			
+			send_str = {  //构造数据
+				music_name:music_name,
+				toy_id:toy_id
+			}  
+			// 发送数据给后端，注意要json序列化
+			ws.send(JSON.stringify(send_str));
+		});
+		
 	</script>
 
 </html>

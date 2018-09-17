@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify,request
 from setting import MONGO_DB
 from setting import RET
+from bson import ObjectId
 
 cont = Blueprint("cont", __name__)
 
@@ -18,3 +19,22 @@ def content_list():  # 内容列表
     RET["data"] = res_list
 
     return jsonify(RET)  # 返回json数据
+
+
+@cont.route("/content_one", methods=["POST"])
+def content_one():
+    """
+    获取一条内容
+    :return: settings-->RET
+    """
+    content_id = request.form.get("content_id")
+    # 根据_id获取一条数据
+    res = MONGO_DB.sources.find_one({"_id":ObjectId(content_id)})
+
+    res["_id"] = str(res["_id"])  # 转换为str
+
+    RET["code"] = 0
+    RET["msg"] = ""
+    RET["data"] = res
+
+    return jsonify(RET)

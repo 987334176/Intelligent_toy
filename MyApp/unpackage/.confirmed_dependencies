@@ -14,5 +14,15 @@
 			"reg.html",
 			"user_info.html"
 		]
+	},
+	"main.html": {
+		"refer": [
+			"player.html"
+		]
+	},
+	"user_info.html": {
+		"refer": [
+			"toy_manager.html"
+		]
 	}
 }

@@ -1,4 +1,4 @@
-from flask import Flask, request,jsonify
+from flask import Flask, request,jsonify,render_template
 from setting import MONGO_DB
 from setting import RET
 from bson import ObjectId
@@ -12,7 +12,7 @@ app.register_blueprint(content.cont)
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return render_template("index.html")
 
 
 @app.route('/login',methods=["POST"])
@@ -64,6 +64,8 @@ def reg():
             "password": password,
             "age": age,
             "nickname": nickname,
+            # 判断gender==2,成立时为girl.jpg,否则为boy.jpg
+            "avatar": "girl.jpg" if gender == 2 else "boy.jpg",
             "gender": gender,
             "phone": phone
         }

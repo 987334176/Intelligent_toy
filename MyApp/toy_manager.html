@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">管理我的玩具</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view" id="toy_list">
+				<li class="mui-table-view-cell mui-media">
+					<a id="add_toy">
+						<img class="mui-media-object mui-pull-left" src="images/add.png">
+						<div class="mui-media-body">
+							你还没有玩具
+							<p class="mui-ellipsis">点击此处扫描二维码添加玩具</p>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+
+		function create_content(content) {
+			var litag = document.createElement("li");
+			litag.className = "mui-table-view-cell mui-media";
+			var atag = document.createElement("a");
+			atag.id = content._id;
+			// 点击事件 周一把这儿写了 绑定事件
+			atag.onclick = function() {
+				console.log(this.id);
+				openPlayer(this.id);
+			}
+
+			var imgtag = document.createElement("img");
+			imgtag.className = "mui-media-object mui-pull-left";
+
+			imgtag.src = window.serv_imge + content.avatar;
+
+			var divtag = document.createElement("div");
+			divtag.className = "mui-media-body";
+			divtag.innerText = content.title;
+			var ptag = document.createElement("p");
+			ptag.className = "mui-ellipsis";
+			ptag.innerText = content.intro;
+
+			litag.appendChild(atag);
+			atag.appendChild(imgtag);
+			atag.appendChild(divtag);
+			divtag.appendChild(ptag);
+
+			document.getElementById("toy_list").appendChild(litag);
+
+		}
+
+		document.getElementById("add_toy").addEventListener("tap", function() {
+			mui.openWindow({
+				url: "扫描二维码.html",
+				id: "扫描二维码.html",
+			})
+		})
+	</script>
+
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<audio src="" autoplay="autoplay" controls id="player"></audio>
+<br>
+<button onclick="start_reco()">开始废话</button>
+<br>
+<button onclick="stop_reco()">发送语音</button>
+</body>
+<script src="/static/recorder.js"></script>
+<script type="application/javascript">
+    // 获取音频文件
+    var get_file = "http://192.168.11.86:9527/get_audio/";
+    // 创建 WebSocket 对象
+    var ws = new WebSocket("ws://192.168.11.86:9528/toy/123456");
+    var reco = null;
+    // 创建AudioContext对象
+    var audio_context = new AudioContext();
+    //要获取音频和视频
+    navigator.getUserMedia = (navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia);
+
+    // 拿到媒体对象，允许音频对象
+    navigator.getUserMedia({audio: true}, create_stream, function (err) {
+        console.log(err)
+    });
+
+    //创建媒体流容器
+    function create_stream(user_media) {
+        var stream_input = audio_context.createMediaStreamSource(user_media);
+        // 给Recoder 创建一个空间，麦克风说的话，都可以录入。是一个流
+        reco = new Recorder(stream_input);
+
+    }
+
+    function start_reco() {  //开始录音
+        reco.record();  //往里面写流
+    }
+
+    function stop_reco() {  //停止录音
+        reco.stop();  //停止写入流
+        get_audio();  //调用自定义方法
+        reco.clear();  //清空容器
+    }
+
+    function get_audio() {  // 获取音频
+        reco.exportWAV(function (wav_file) {
+            ws.send(wav_file);  //使用websocket连接发送数据给后端
+        })
+    }
+
+    ws.onmessage = function (data) {  // 客户端接收服务端数据时触发
+        // console.log(get_file + data.data);
+        var content = JSON.parse(data.data);
+        console.log(content);
+        // 修改id为player的src属性,实现自动播放
+        document.getElementById("player").src = get_file + content.data;
+        console.log(content.from_user + "给你点了一首歌");
+    }
+
+
+</script>
+</html>

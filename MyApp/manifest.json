@@ -145,6 +145,20 @@
 					"user_info.html"
 				],
 				"priority": 0
+			},
+			"main.html": {
+				"resources": [],
+				"refer": [
+					"player.html"
+				],
+				"priority": 0
+			},
+			"user_info.html": {
+				"resources": [],
+				"refer": [
+					"toy_manager.html"
+				],
+				"priority": 0
 			}
 		},
 		"idle": {

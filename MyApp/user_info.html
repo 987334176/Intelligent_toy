@@ -14,8 +14,15 @@
 		</header>
 		<div class="mui-content">
 			<ul class="mui-table-view">
+				<div class="mui-row" style="text-align: center;">
+					<img src="" id="avatar" / style="width: 250px;height: 250px; border-radius: 100%;">
+				</div>
 				<li class="mui-table-view-cell"><span>用户名</span><span id="username" class="mui-pull-right">111</span></li>
 				<li class="mui-table-view-cell"><span>昵称</span><span id="nickname" class="mui-pull-right">22</span></li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell" id="toy_manager"><i class="mui-icon mui-icon-qq"></i>管理我的玩具</li>
+
 			</ul>
 
 			<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="logout">退出登陆</button>
@@ -34,8 +41,12 @@
 				},
 				function(data) {
 					console.log(JSON.stringify(data));
+					console.log("wfdsfdsafdsafas");
 					document.getElementById("username").innerText = data.username;
 					document.getElementById("nickname").innerText = data.nickname;
+					// 修改头像地址
+					document.getElementById("avatar").src = "avatar/" + data.avatar;
+//					console.log("avatar/" + data.avatar);
 				}
 			)
 		})
@@ -47,7 +58,17 @@
 				id: "login.html",
 				styles: window.styles
 			})
-		})
+		});
+		
+		// 管理玩具页面
+		document.getElementById("toy_manager").addEventListener("tap", function() {
+			mui.openWindow({
+				url: "toy_manager.html",
+				id: "toy_manager.html",
+			})
+		});
+		
+
 	</script>
 
 </html>

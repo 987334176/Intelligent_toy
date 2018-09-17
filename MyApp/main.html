@@ -136,18 +136,22 @@
 			mui.toast(data.detail.talk);
 		})
 		
-		function create_content(content){		
+		function create_content(content){	//创建图文列表	
 			var litag = document.createElement("li");
 			litag.className = "mui-table-view-cell mui-media";
 			var atag = document.createElement("a");
 			atag.id = content._id;
-			// 点击事件 周一把这儿写了
+			// 点击事件
+			atag.onclick = function(){
+				console.log(this.id);
+				openPlayer(this.id);  //调用openPlayer方法
+			}
 			
 			var imgtag = document.createElement("img");
 			imgtag.className = "mui-media-object mui-pull-left";
 			
 			imgtag.src = window.serv_imge + content.avatar;
-			console.log(window.serv_imge + content.avatar);
+//			console.log(window.serv_imge + content.avatar);
 			
 			var divtag = document.createElement("div");
 			divtag.className = "mui-media-body";
@@ -163,6 +167,15 @@
 		 	
 		 	document.getElementById("content_list").appendChild(litag);
 		
+		}
+		
+		function openPlayer(content_id){  //打开播放页面
+			mui.openWindow({
+				url:"player.html",
+				id:"player.html",
+				// 传递参数content_id
+				extras:{content_id:content_id}
+			})
 		}
 		
 	</script>

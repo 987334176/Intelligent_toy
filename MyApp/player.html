@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title_text">正在播放</h1>
+		</header>
+		<div class="mui-content">
+		    <div class="mui-row" style="text-align: center;margin-top: 5px;">
+				<img src="avatar/girl.jpg" style="width: 250px;height: 250px; border-radius: 50%;" id="avatar" />
+			</div>
+			<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="play">播放</button>
+			<button type="button" class="mui-btn mui-btn-yellow mui-btn-block" id="pause">暂停</button>
+			<button type="button" class="mui-btn mui-btn-green mui-btn-block" id="resume">继续</button>
+			<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="stop">停止</button>
+			<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="send2toy">发送给玩具</button>
+		</div>
+
+	</body>
+	<script src="js/mui.js"></script>
+	<script type="text/javascript">
+		mui.init();
+		var Sdata = null;  //当前web页面
+		var music_name = null;  //歌曲名
+		var player = null;  //播放对象
+		mui.plusReady(function() {
+			Sdata = plus.webview.currentWebview();  // 当前web页面
+			mui.toast(Sdata.content_id);  // 弹窗显示由main.html传递的content_id
+
+			//发送post请求
+			mui.post(
+				window.serv + "/content_one", {
+					// 参数为content_id
+					content_id: Sdata.content_id
+				},
+				function(data) {
+					// 打印响应数据
+					console.log(JSON.stringify(data));
+					// 修改标题
+					document.getElementById("title_text").innerText = "正在播放 : " + data.data.title;
+					// 修改图片地址
+					document.getElementById("avatar").src = window.serv_imge + data.data.avatar;
+					// 调用自定义方法,播放音频
+					// data是后端返回的数据,data.audio是音频文件名
+					music_name = data.data.audio;  // 歌曲名
+					play_anything(music_name);  //播放歌曲
+				}
+			);
+			
+			function play_anything(content) {  //播放音频
+				// 创建播放对象，拼接路径
+				player = plus.audio.createPlayer(window.serv_audio + content);
+				console.log(window.serv_audio + content);  //打印路径
+				//  http://192.168.11.86:9527/get_audio/a6d680fe-fa80-4a54-82b8-b203f5a9c7b4.mp3
+				player.play();  // 播放音频
+			}
+			
+			document.getElementById("play").addEventListener("tap", function() {
+				player.play();
+			});
+	
+			document.getElementById("pause").addEventListener("tap", function() {
+				player.pause();  //暂停
+			});
+			
+			document.getElementById("resume").addEventListener("tap", function() {
+				player.resume();  //继续
+			});
+			
+			document.getElementById("stop").addEventListener("tap", function() {
+				player.stop(); // 停止,直接清空player中的对象
+			});
+			
+			//发送给玩具
+			document.getElementById("send2toy").addEventListener("tap", function() {
+				var index = plus.webview.getWebviewById("HBuilder");  //index.html页面
+				mui.fire(index, "send_music", {  //发送音乐
+					music_name: music_name,  //歌曲名
+					toy_id:"123456"  // 发给玩具id为12345
+				})
+			});
+			
+		})
+	</script>
+
+</html>
