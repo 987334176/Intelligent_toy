@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">绑定我的玩具</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>玩具的昵称</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入玩具的昵称" id="toy_name">
+				</div>
+				<div class="mui-input-row mui-radio mui-left">
+					<label>男</label>
+					<input name="gender" type="radio" value="1">
+				</div>
+				<div class="mui-input-row mui-radio mui-left">
+					<label>女</label>
+					<input name="gender" type="radio" value="2" checked>
+				</div>
+				<div class="mui-input-row">
+					<label>玩具的主人</label>
+					<input type="text" class="mui-input-clear" placeholder="请输入小主人的名字" id="baby_name">
+				</div>
+				<div class="mui-input-row">
+					<label>主人的称呼</label>
+					<input type="text" class="mui-input-clear" placeholder="玩具主人对您的称呼" id="remark">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="bind">绑定</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-action-back">取消</button>
+				</div>
+			</form>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		
+		var Sdata = null;
+		mui.plusReady(function() {
+			Sdata = plus.webview.currentWebview();
+			console.log(plus.storage.getItem("user"))
+		})
+
+		document.getElementById("bind").addEventListener("tap", function() {
+			var toy_name = document.getElementById("toy_name").value;
+			var baby_name = document.getElementById("baby_name").value;
+			var remark = document.getElementById("remark").value;
+			var gender_list = document.getElementsByName("gender");
+			var gender = null;
+			for(var i = 0; i < gender_list.length; i++) {
+				if(gender_list[i].checked) {
+					gender = gender_list[i].value;
+				}
+			}
+
+			mui.post(
+				window.serv + "/bind_toy", {
+					device_id: Sdata.device_id,
+					toy_name:toy_name,
+					baby_name:baby_name,
+					remark:remark,
+					gender:gender,
+					// 全局变量,从plus.storage中获取
+					user_id:plus.storage.getItem("user")
+					
+				},
+				function(data){
+					console.log(JSON.stringify(data));
+					mui.toast(data.msg);
+					// 绑定玩具成功之后
+					if(data.code==0){
+						// 跳转到用户信息页面
+						mui.openWindow({
+							url:"user_info.html",
+							id:"user_info.html",
+							styles:window.styles
+						})
+					}
+				}
+			)
+		})
+	</script>
+
+</html>

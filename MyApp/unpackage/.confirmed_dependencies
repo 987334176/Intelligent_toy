@@ -24,5 +24,15 @@
 		"refer": [
 			"toy_manager.html"
 		]
+	},
+	"toy_manager.html": {
+		"refer": [
+			"qrcode.html"
+		]
+	},
+	"qrcode.html": {
+		"refer": [
+			"bind_toy.html"
+		]
 	}
 }

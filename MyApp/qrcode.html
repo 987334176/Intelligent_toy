@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">扫描玩具二维码</h1>
+		</header>
+		<div class="mui-content">
+			<div style="height: 550px;" id="qr"></div>
+		</div>
+
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		
+		function chenggong(type, code) {  //扫码成功回调函数
+			mui.post(
+				// 验证二维码
+				window.serv + "/yanzheng_qr", {
+					// 发送设备id
+					device_id: code
+				},
+				function(data) {
+					console.log(JSON.stringify(data));
+					mui.toast(data.msg);  //显示结果
+					if(data.code == 2) {
+						mui.back();  //返回页面
+					}
+					if(data.code == 1) {
+						//加好友的小逻辑 跳转到加好友页面
+					}
+					if(data.code == 0) {
+						//今天的逻辑 创建玩具 绑定用户 成为玩具的第一个好友
+						//1.创建玩具：打开创建玩具的页面
+						mui.openWindow({
+							url:"bind_toy.html",
+							id:"bind_toy.html",
+							extras:{
+								device_id:code
+							}
+						})
+					}
+				}
+			)
+		}
+		
+		mui.plusReady(function() {
+			// 创建Barcode对象
+			var barcode = new plus.barcode.Barcode('qr');
+			barcode.start();  // 开始条码识别
+			barcode.onmarked = chenggong;  // 扫码成功后，执行函数chenggong
+		})
+	</script>
+
+</html>

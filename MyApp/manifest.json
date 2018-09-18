@@ -159,6 +159,20 @@
 					"toy_manager.html"
 				],
 				"priority": 0
+			},
+			"toy_manager.html": {
+				"resources": [],
+				"refer": [
+					"qrcode.html"
+				],
+				"priority": 0
+			},
+			"qrcode.html": {
+				"resources": [],
+				"refer": [
+					"bind_toy.html"
+				],
+				"priority": 0
 			}
 		},
 		"idle": {

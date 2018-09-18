@@ -29,46 +29,60 @@
 	</body>
 	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		mui.init()
-
-		function create_content(content) {
+		mui.init();
+		mui.plusReady(function(){
+			// 发送POST请求，访问玩具列表
+			mui.post(
+				window.serv + "/toy_list",
+				{user_id:plus.storage.getItem("user")},
+				function(data){
+					console.log(JSON.stringify(data));
+					// for循环玩具列表
+					for (var i = 0; i < data.data.length; i++) {
+						// 调用自定义函数,渲染玩具列表
+						create_content(data.data[i]);
+					}
+				}
+			)
+		});
+		
+		function create_content(content) {  //玩具列表
 			var litag = document.createElement("li");
 			litag.className = "mui-table-view-cell mui-media";
 			var atag = document.createElement("a");
 			atag.id = content._id;
-			// 点击事件 周一把这儿写了 绑定事件
 			atag.onclick = function() {
 				console.log(this.id);
-				openPlayer(this.id);
+				//openPlayer(this.id);
 			}
 
 			var imgtag = document.createElement("img");
 			imgtag.className = "mui-media-object mui-pull-left";
-
-			imgtag.src = window.serv_imge + content.avatar;
+			imgtag.style = "border-radius: 50%;width: 45px;height: 45px; "
+			imgtag.src = "avatar/" + content.avatar;
 
 			var divtag = document.createElement("div");
 			divtag.className = "mui-media-body";
-			divtag.innerText = content.title;
+			divtag.innerText = content.baby_name;
 			var ptag = document.createElement("p");
 			ptag.className = "mui-ellipsis";
-			ptag.innerText = content.intro;
+			ptag.innerText = content.toy_name;
 
 			litag.appendChild(atag);
 			atag.appendChild(imgtag);
 			atag.appendChild(divtag);
 			divtag.appendChild(ptag);
-
+ 
 			document.getElementById("toy_list").appendChild(litag);
 
 		}
 
 		document.getElementById("add_toy").addEventListener("tap", function() {
 			mui.openWindow({
-				url: "扫描二维码.html",
-				id: "扫描二维码.html",
+				url: "qrcode.html",
+				id: "qrcode.html",
 			})
-		})
+		});
 	</script>
 
 </html>
