@@ -42,6 +42,10 @@
 | /get_audio/ | 获取音频 | GET |
 | /get_image/ | 获取图片 | GET |
 | /content_list/ | 内容列表 | POST |
+| /content_one/ | 获取一条内容 | POST |
+| /yanzheng_qr/ | 验证二维码 | POST |
+| /bind_toy/ | 绑定玩具 | POST |
+| /toy_list/ | 玩具列表 | POST |
 
 ## 运行方式
 
