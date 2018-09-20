@@ -7,6 +7,7 @@ from serv import content
 from serv import devices
 from serv import toys
 from serv import friend
+from serv import chat
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app.register_blueprint(content.cont)
 app.register_blueprint(devices.devs)
 app.register_blueprint(toys.toy)
 app.register_blueprint(friend.fri)
+app.register_blueprint(chat.cht)
 
 @app.route('/')
 def hello_world():

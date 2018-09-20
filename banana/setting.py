@@ -20,6 +20,7 @@ AUDIO_FILE = os.path.join(os.path.dirname(__file__), "audio")  # 音频
 AUDIO_IMG_FILE = os.path.join(os.path.dirname(__file__), "audio_img")  # 音频图片
 
 DEVICE_CODE_PATH = os.path.join(os.path.dirname(__file__), "device_code")  # 二维码
+CHAT_FILE = os.path.join(os.path.dirname(__file__), "chat")  # 聊天
 
 # 百度AI配置
 APP_ID = "11799986"

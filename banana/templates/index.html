@@ -8,23 +8,37 @@
 <body>
 <audio src="" autoplay="autoplay" controls id="player"></audio>
 <br>
-<input type="text" id="device_id">
+<input type="text" id="device_id"/>
 <button onclick="start_toy()">玩具开机键</button>
 <br>
 <button onclick="start_reco()">开始废话</button>
 <br>
 <button onclick="stop_reco()">发送语音</button>
+<br>
+<button onclick="start_reco()">录制消息</button>
+<span id="to_user"></span>
+<br>
+<button onclick="send_reco()">发送语音消息</button>
+<br>
+<button onclick="recv_msg()">收取消息</button>
 </body>
 <script src="/static/recorder.js"></script>
 <script src="/static/jquery.min.js"></script>
 <script type="application/javascript">
+    var serv = "http://127.0.0.1:9527";
+    var ws_serv = "ws://127.0.0.1:9528";
+
     // 获取音频文件
-    var get_file = "http://192.168.11.40:9527/get_audio/";
+    var get_music = serv + "/get_audio/";
+    var get_chat = serv + "/get_chat/";
 
     var ws = null;  // WebSocket 对象
     var reco = null;
     // 创建AudioContext对象
     var audio_context = new AudioContext();
+
+    var toy_id = null;
+
     //要获取音频和视频
     navigator.getUserMedia = (navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
@@ -54,11 +68,41 @@
         reco.clear();  //清空容器
     }
 
-    function get_audio() {  // 获取音频
+    {#function get_audio() {  // 获取音频#}
+    {#    reco.exportWAV(function (wav_file) {#}
+    {#        ws.send(wav_file);  //使用websocket连接发送数据给后端#}
+    {#    })#}
+    {# }#}
+
+    function send_reco() {
+        reco.stop();
+        send_audio();
+        reco.clear();
+    }
+
+    function send_audio() {
+        var to_user = document.getElementById("to_user").innerText;
+        var send_str = {
+            "to_user": to_user
+        };
+        ws.send(JSON.stringify(send_str));
         reco.exportWAV(function (wav_file) {
-            ws.send(wav_file);  //使用websocket连接发送数据给后端
+            ws.send(wav_file);
         })
     }
+
+    function get_audio() {
+
+        var send_str = {
+            "to_user": toy_id,
+            "msg_type": "ai"
+        };
+        ws.send(JSON.stringify(send_str));
+        reco.exportWAV(function (wav_file) {
+            ws.send(wav_file);
+        })
+    }
+
 
     function start_toy() {  // 玩具开机
         // 获取输入的设备id
@@ -73,19 +117,41 @@
                 console.log(data);
                 toy_id = data.data.toy_id;  // 玩具id
                 // 修改audio标签的src属性
-                document.getElementById("player").src = get_file + data.data.audio;
+                document.getElementById("player").src = get_music + data.data.audio;
                 if (toy_id) {  // 判断玩具id存在时
-                    ws = new WebSocket("ws://192.168.11.40:9528/toy/" + toy_id);
+                    ws = new WebSocket(ws_serv + "/toy/" + toy_id);
                     ws.onmessage = function (data) {
-                        // console.log(get_file + data.data);
+                        // console.log(get_music + data.data);
                         var content = JSON.parse(data.data);  //反序列化数据
-                        document.getElementById("player").src = get_file + content.data;
-                        console.log(content.from_user + "给你点了一首歌");
+                        // 判断消息类型
+                        if (content.msg_type == "chat") {
+                            document.getElementById("player").src = get_chat + content.data;
+                            document.getElementById("to_user").innerText = content.from_user;
+                            console.log(content.from_user + "给你发送了一条消息");
+                        }
+                        if (content.msg_type == "music") {
+                            document.getElementById("player").src = get_music + content.data;
+                            console.log(content.from_user + "给你点播了歌儿");
+                        }
+                    };
+                    ws.onclose = function () {
+                        window.location.reload();
                     }
                 }
             }, "json"
             // 规定预期的服务器响应的数据类型为json
         );
+    }
+
+    function recv_msg() {
+        to_user = document.getElementById("to_user").innerText;
+        $.post(
+            serv + "/get_msg",
+            {user_id: toy_id, sender: to_user},
+            function (data) {
+                document.getElementById("player").src = get_chat + data.data;
+            }, "json"
+        )
     }
 
 

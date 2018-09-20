@@ -48,6 +48,8 @@
 | /toy_list/ | 玩具列表 | POST |
 | /friend_list/ |  好友列表 | POST |
 | /device_toy_id/ | 验证设备id | POST |
+| /chat_list/ | 聊天记录列表 | POST |
+| /get_msg/ | 获取聊天语言文件 | POST |
 
 ## 运行方式
 

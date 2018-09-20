@@ -48,6 +48,10 @@
 				// 客户端接收服务端数据时触发
 				ws.onmessage = function() {};
 			}
+			// 自动重连
+			ws.onclose = function() {
+				window.location.reload();
+			}
 		});
 
 		// 消息
@@ -102,14 +106,15 @@
 			var toy_id = data.detail.toy_id; //获取发送的玩具id
 
 			send_str = { //构造数据
-				music_name: music_name,
-				toy_id: toy_id
+				data: music_name,
+				to_user: toy_id, // 目标用户,这里统一格式
+				msg_type: "music", // 类型为音乐
 			}
 			// 发送数据给后端，注意要json序列化
 			ws.send(JSON.stringify(send_str));
 		});
 
-		document.addEventListener("send_msg", function(data) {  //发送消息
+		document.addEventListener("send_msg", function(data) { //发送消息
 			var filename = data.detail.filename
 			var to_user = data.detail.to_user
 			send_str = {
@@ -129,7 +134,7 @@
 					fileReader.onloadend = function(evt) {
 						console.log(evt.target.result);
 						var b = dataURLtoBlob(evt.target.result);
-						ws.send(b);  // 发送blob数据
+						ws.send(b); // 发送blob数据
 
 					}
 					//						alert(file.size + '--' + file.name)
@@ -138,7 +143,7 @@
 
 		})
 
-		function dataURLtoBlob(dataurl) {  // 数据转换为Blob
+		function dataURLtoBlob(dataurl) { // 数据转换为Blob
 			// 逻辑很复杂,这里不解释了。直接用就可以了！
 			var arr = dataurl.split(','),
 				mime = arr[0].match(/:(.*?);/)[1],

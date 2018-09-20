@@ -12,17 +12,10 @@
 	<body>
 		<header class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">与xxx进行对话</h1>
+			<h1 class="mui-title" id="title_text"></h1>
 		</header>
 		<div class="mui-content" id="chat_list">
-			<div class="leftd">
-				<img src="avatar/girl.jpg" class="leftd_h" />
-				<div class="speech left">点击播放</div>
-			</div>
-			<div class="rightd">
-				<img src="avatar/girl.jpg" class="rightd_h" />
-				<div class="speech right">点击播放</div>
-			</div>
+
 		</div>
 		<nav class="mui-bar mui-bar-tab">
 			<a class="mui-tab-item mui-active" id="talk">
@@ -50,6 +43,28 @@
 		mui.plusReady(function() {
 			index = plus.webview.getWebviewById("HBuilder");
 			Sdata = plus.webview.currentWebview();
+			// 发送post请求
+			mui.post(
+				// 请求聊天记录
+				window.serv + "/chat_list",
+				{friend_id:Sdata.friend_id,user_id:plus.storage.getItem("user")},
+				function(data){
+					console.log(JSON.stringify(data));
+					// 修改DOM
+					document.getElementById("title_text").innerText = "正在与"+ data.msg +"对话"
+					for (var i = 0; i < data.data.length; i++) {
+						if(data.data[i].sender == plus.storage.getItem("user"))
+						{
+							// 显示我发送的消息
+							create_chat("self",window.serv_chat+data.data[i].msg)
+						}
+						else{
+							// 显示其他人的消息
+							create_chat("other",window.serv_chat+data.data[i].msg)
+						}
+					}
+				}
+			);
 		})
 		var rec = null;
 
@@ -93,6 +108,8 @@
 				div2class = "speech right";
 			}
 
+			var atag = document.createElement("a");
+			
 			var div1tag = document.createElement("div");
 			div1tag.className = div1class;
 			var imgtag = document.createElement("img");
@@ -100,26 +117,32 @@
 			imgtag.src = "avatar/girl.jpg"
 			var div2tag = document.createElement("div");
 			div2tag.className = div2class;
+			atag.id = p;
 			div2tag.innerText = "点击播放";
 			div2tag.onclick = function() {
 				// p 可能是一个名字 也有可能是一个 路径
-				console.log(p);
-				// createPlayer创建音频播放对象,play播放音频
-				plus.audio.createPlayer(p).play();
+				//console.log(p);
+				player(p);
 			}
 
+			atag.appendChild(div1tag)
 			div1tag.appendChild(imgtag);
 			div1tag.appendChild(div2tag);
 
-			document.getElementById("chat_list").appendChild(div1tag);
+			document.getElementById("chat_list").appendChild(atag);
 
 		}
-		// 生成几个div。一个div就是一次说话
-		create_chat("self");  // self表示我
-		create_chat("w");  // 这个可以随便写，表示其他
-		create_chat("self");
-		create_chat("2");
-		create_chat("2");
+		
+		document.addEventListener("new_msg", function(data) {  // 监听新消息
+			console.log(JSON.stringify(data.detail.data));
+			var msg = data.detail.data;
+			create_chat("other", window.serv_chat + msg.data);
+		})
+		
+		function player(file_url){  // 播放音频
+			// 播放音频
+			var p = plus.audio.createPlayer(file_url).play();
+		}
 
 		
 	</script>
