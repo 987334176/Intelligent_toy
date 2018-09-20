@@ -46,6 +46,8 @@
 | /yanzheng_qr/ | 验证二维码 | POST |
 | /bind_toy/ | 绑定玩具 | POST |
 | /toy_list/ | 玩具列表 | POST |
+| /friend_list/ |  好友列表 | POST |
+| /device_toy_id/ | 验证设备id | POST |
 
 ## 运行方式
 
