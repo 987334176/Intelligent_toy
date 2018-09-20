@@ -14,26 +14,42 @@
 			<h1 class="mui-title" id="title_text">正在播放</h1>
 		</header>
 		<div class="mui-content">
-		    <div class="mui-row" style="text-align: center;margin-top: 5px;">
+			<div class="mui-row" style="text-align: center;margin-top: 5px;">
 				<img src="avatar/girl.jpg" style="width: 250px;height: 250px; border-radius: 50%;" id="avatar" />
 			</div>
 			<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="play">播放</button>
 			<button type="button" class="mui-btn mui-btn-yellow mui-btn-block" id="pause">暂停</button>
 			<button type="button" class="mui-btn mui-btn-green mui-btn-block" id="resume">继续</button>
 			<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="stop">停止</button>
-			<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="send2toy">发送给玩具</button>
+			<style type="text/css">
+				#popover {
+					height: 150px;
+					width: 300px;
+				}
+			</style>
+			<div id="popover" class="mui-popover">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="mui-table-view" id="toy_list" style="text-align: center;">
+
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!--<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="send2toy">发送给玩具</button>-->
+			<a href="#popover" id="openPopover" class="mui-btn mui-btn-primary mui-btn-block">发送给玩具</a>
 		</div>
 
 	</body>
 	<script src="js/mui.js"></script>
 	<script type="text/javascript">
 		mui.init();
-		var Sdata = null;  //当前web页面
-		var music_name = null;  //歌曲名
-		var player = null;  //播放对象
+		var Sdata = null; //当前web页面
+		var music_name = null; //歌曲名
+		var player = null; //播放对象
 		mui.plusReady(function() {
-			Sdata = plus.webview.currentWebview();  // 当前web页面
-			mui.toast(Sdata.content_id);  // 弹窗显示由main.html传递的content_id
+			Sdata = plus.webview.currentWebview(); // 当前web页面
+			mui.toast(Sdata.content_id); // 弹窗显示由main.html传递的content_id
 
 			//发送post请求
 			mui.post(
@@ -50,44 +66,82 @@
 					document.getElementById("avatar").src = window.serv_imge + data.data.avatar;
 					// 调用自定义方法,播放音频
 					// data是后端返回的数据,data.audio是音频文件名
-					music_name = data.data.audio;  // 歌曲名
-					play_anything(music_name);  //播放歌曲
+					music_name = data.data.audio; // 歌曲名
+					play_anything(music_name); //播放歌曲
 				}
 			);
-			
-			function play_anything(content) {  //播放音频
+
+			mui.post(  //查询当前用户的玩具列表
+				window.serv + "/toy_list", {
+					user_id: plus.storage.getItem("user")
+				},
+				function(data) {
+					console.log(JSON.stringify(data));
+					for(var i = 0; i < data.data.length; i++) {
+						// 执行定义方法create_toy，增加li标签
+						create_toy(data.data[i]);
+					}
+
+				}
+			);
+
+			function play_anything(content) { //播放音频
 				// 创建播放对象，拼接路径
 				player = plus.audio.createPlayer(window.serv_audio + content);
-				console.log(window.serv_audio + content);  //打印路径
+				console.log(window.serv_audio + content); //打印路径
 				//  http://192.168.11.86:9527/get_audio/a6d680fe-fa80-4a54-82b8-b203f5a9c7b4.mp3
-				player.play();  // 播放音频
+				player.play(); // 播放音频
 			}
-			
+
 			document.getElementById("play").addEventListener("tap", function() {
 				player.play();
 			});
-	
+
 			document.getElementById("pause").addEventListener("tap", function() {
-				player.pause();  //暂停
+				player.pause(); //暂停
 			});
-			
+
 			document.getElementById("resume").addEventListener("tap", function() {
-				player.resume();  //继续
+				player.resume(); //继续
 			});
-			
+
 			document.getElementById("stop").addEventListener("tap", function() {
 				player.stop(); // 停止,直接清空player中的对象
 			});
-			
+
 			//发送给玩具
 			document.getElementById("send2toy").addEventListener("tap", function() {
-				var index = plus.webview.getWebviewById("HBuilder");  //index.html页面
-				mui.fire(index, "send_music", {  //发送音乐
-					music_name: music_name,  //歌曲名
-					toy_id:"123456"  // 发给玩具id为12345
+				var index = plus.webview.getWebviewById("HBuilder"); //index.html页面
+				mui.fire(index, "send_music", { //发送音乐
+					music_name: music_name, //歌曲名
+					toy_id: "123456" // 发给玩具id为12345
 				})
 			});
-			
+
+			function create_toy(toy_info) { // 创建玩具
+				// 构造下面的标签
+				//				<li class="mui-table-view-cell">
+				//					<a href="#">Item1</a>
+				//				</li>
+				var litag = document.createElement("li");
+				litag.className = "mui-table-view-cell"
+				var atag = document.createElement("a");
+				atag.id = toy_info._id;  // 玩具id
+				atag.innerText = toy_info.baby_name;
+				atag.onclick = function() {  // 点击事件
+				// 获取index页面
+				var index = plus.webview.getWebviewById("HBuilder")
+					mui.fire(index, "send_music", {  // 使用fire发送数据给index
+						music_name: music_name,  //歌曲名
+						//玩具id，注意：这里必须是this.id。它表示你点击的是哪个玩具
+						toy_id: this.id
+					})
+				}
+
+				litag.appendChild(atag);
+				document.getElementById("toy_list").appendChild(litag);
+			}
+
 		})
 	</script>
 

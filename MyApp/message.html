@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我的好友</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view" id="friend_list">
+
+			</ul>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		var Sdata = null;
+		mui.back = function(){};
+
+		// 加载HTML5Puls
+		mui.plusReady(function() {
+			Sdata = plus.webview.currentWebview();
+			// post请求
+			mui.post(
+				// 好友列表
+				window.serv + "/friend_list",
+				{user_id:Sdata.user_id},
+				function(data){
+					console.log(JSON.stringify(data));
+					// 循环好友列表
+					for (var i = 0; i < data.data.length; i++) {
+						// 执行自定义方法，渲染页面
+						create_content(data.data[i]);
+					}
+				}
+			)
+		});
+		
+		function create_content(content){	
+//			<li class="mui-table-view-cell mui-media">
+//		        <a href="javascript:;">
+//		            <img class="mui-media-object mui-pull-left" src="../images/shuijiao.jpg">
+//		            <div class="mui-media-body">
+//		                幸福
+//		                <p class='mui-ellipsis'>能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+//		            </div>
+//		        </a>
+//		    </li>
+			var litag = document.createElement("li");
+			litag.className = "mui-table-view-cell mui-media";
+			var atag = document.createElement("a");
+			atag.id = content.friend_id;
+			// 点击事件
+			atag.onclick = function(){
+				console.log(this.id);
+				open_chat(this.id);  //执行自定义方法open_chat
+			}
+
+			var imgtag = document.createElement("img");
+			imgtag.className = "mui-media-object mui-pull-left";
+			
+			imgtag.src = "avatar/" + content.friend_avatar;
+			
+			var divtag = document.createElement("div");
+			divtag.className = "mui-media-body";
+			divtag.innerText = content.friend_remark;
+			var ptag = document.createElement("p");
+			ptag.className = "mui-ellipsis";
+			ptag.innerText = content.friend_name;
+		 	
+		 	litag.appendChild(atag);
+		 	atag.appendChild(imgtag);
+		 	atag.appendChild(divtag);
+		 	divtag.appendChild(ptag);
+		 	
+		 	document.getElementById("friend_list").appendChild(litag);
+		}
+		
+		function open_chat(friend_id){  // 打开chat.html
+			mui.openWindow({
+				url:"chat.html",
+				id:"chat.html",
+				extras:{
+					// 传参给chat.html
+					friend_id:friend_id
+				}
+			})
+		}
+
+	</script>
+
+</html>

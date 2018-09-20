@@ -10,14 +10,15 @@
 	</head>
 
 	<body>
+		<!--底部选项卡-->
 		<nav class="mui-bar mui-bar-tab">
 			<a class="mui-tab-item mui-active" id="index">
 				<span class="mui-icon mui-icon-home"></span>
 				<span class="mui-tab-label">首页</span>
 			</a>
-			<a class="mui-tab-item" id="phone">
-				<span class="mui-icon mui-icon-phone"></span>
-				<span class="mui-tab-label">电话</span>
+			<a class="mui-tab-item" id="message">
+				<span class="mui-icon mui-icon-chatbubble"></span>
+				<span class="mui-tab-label">消息</span>
 			</a>
 			<a class="mui-tab-item">
 				<span class="mui-icon mui-icon-email"></span>
@@ -30,7 +31,7 @@
 		</nav>
 	</body>
 	<script type="text/javascript" charset="utf-8">
-		var ws = null;  // websocket对象
+		var ws = null; // websocket对象
 		mui.init({
 			subpages: [{
 				url: "main.html",
@@ -39,28 +40,28 @@
 			}]
 		});
 		mui.plusReady(function() {
-//			console.log(JSON.stringify(plus.webview.currentWebview()))
-			if(plus.storage.getItem("user")) {  // 判断是否登录
+			//			console.log(JSON.stringify(plus.webview.currentWebview()))
+			if(plus.storage.getItem("user")) { // 判断是否登录
 				console.log('已结登录了！');
 				//连接websocket连接
-				ws = new WebSocket("ws://"+window.ws_serv+"/app/"+plus.storage.getItem("user"))
+				ws = new WebSocket("ws://" + window.ws_serv + "/app/" + plus.storage.getItem("user"))
 				// 客户端接收服务端数据时触发
 				ws.onmessage = function() {};
-			} 
+			}
 		});
 
-		document.getElementById("phone").addEventListener("tap", function() {
-			mui.toast("你點擊了電話按鈕");
-
+		// 消息
+		document.getElementById("message").addEventListener("tap", function() {
 			mui.openWindow({
-				url: "phone.html",
-				id: "phone.html",
+				url: "message.html",
+				id: "message.html",
 				styles: window.styles,
 				extras: {
-					user_id: 123456
+					// 传输用户id,给message.html
+					user_id: plus.storage.getItem("user")
 				}
 			})
-		})
+		});
 
 		document.getElementById("index").addEventListener("tap", function() {
 			mui.openWindow({
@@ -71,31 +72,87 @@
 		})
 
 		document.getElementById("login").addEventListener("tap", function() {
-			mui.openWindow({
-				url: "login.html",
-				id: "login.html",
-				styles: window.styles
-			})
+			// 自动登录,判断storage中的user存在，就跳转到user_info，否则跳转login
+			if(plus.storage.getItem("user")) {
+				mui.openWindow({
+					url: "user_info.html",
+					id: "user_info.html",
+					styles: window.styles,
+					extras: {
+						user_id: plus.storage.getItem("user")
+					}
+				})
+			} else {
+				mui.openWindow({
+					url: "login.html",
+					id: "login.html",
+					styles: window.styles
+				})
+			}
 		})
-		
-		document.addEventListener("login",function(data){
+
+		document.addEventListener("login", function(data) {
 			// fire事件接收消息，使用data.detail
 			// index是为做显示区分
-			mui.toast("index"+data.detail.msg)
+			mui.toast("index" + data.detail.msg)
 		});
-		
-		document.addEventListener("send_music", function(data) {  //监听send_music事件
-			var music_name = data.detail.music_name;  //获取player.html使用fire发送的music_name值
-			var toy_id = data.detail.toy_id;  //获取发送的玩具id
-			
-			send_str = {  //构造数据
-				music_name:music_name,
-				toy_id:toy_id
-			}  
+
+		document.addEventListener("send_music", function(data) { //监听send_music事件
+			var music_name = data.detail.music_name; //获取player.html使用fire发送的music_name值
+			var toy_id = data.detail.toy_id; //获取发送的玩具id
+
+			send_str = { //构造数据
+				music_name: music_name,
+				toy_id: toy_id
+			}
 			// 发送数据给后端，注意要json序列化
 			ws.send(JSON.stringify(send_str));
 		});
-		
+
+		document.addEventListener("send_msg", function(data) {  //发送消息
+			var filename = data.detail.filename
+			var to_user = data.detail.to_user
+			send_str = {
+				to_user: to_user
+			}
+			ws.send(JSON.stringify(send_str))
+			plus.io.resolveLocalFileSystemURL(filename, function(entry) {
+				// 可通过entry对象操作test.html文件 
+				entry.file(function(file) {
+					// FileReader文件系统中的读取文件对象，用于获取文件的内容
+					var fileReader = new plus.io.FileReader();
+
+					//						alert("getFile:" + JSON.stringify(file));
+					// readAsDataURL: 以URL编码格式读取文件数据内容
+					fileReader.readAsDataURL(file, 'utf-8');
+					// onloadend: 文件读取操作完成时的回调函数
+					fileReader.onloadend = function(evt) {
+						console.log(evt.target.result);
+						var b = dataURLtoBlob(evt.target.result);
+						ws.send(b);  // 发送blob数据
+
+					}
+					//						alert(file.size + '--' + file.name)
+				});
+			});
+
+		})
+
+		function dataURLtoBlob(dataurl) {  // 数据转换为Blob
+			// 逻辑很复杂,这里不解释了。直接用就可以了！
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			while(n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			var a = new Blob([u8arr], {
+				type: mime
+			});
+			return a
+		}
 	</script>
 
 </html>

@@ -6,6 +6,7 @@ from serv import get_file
 from serv import content
 from serv import devices
 from serv import toys
+from serv import friend
 
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ app.register_blueprint(get_file.getfile)
 app.register_blueprint(content.cont)
 app.register_blueprint(devices.devs)
 app.register_blueprint(toys.toy)
+app.register_blueprint(friend.fri)
 
 @app.route('/')
 def hello_world():

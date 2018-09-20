@@ -134,7 +134,9 @@
 				],
 				"refer": [
 					"phone.html",
-					"login.html"
+					"login.html",
+					"message.html",
+					"user_info.html"
 				],
 				"priority": 0
 			},
@@ -171,6 +173,13 @@
 				"resources": [],
 				"refer": [
 					"bind_toy.html"
+				],
+				"priority": 0
+			},
+			"message.html": {
+				"resources": [],
+				"refer": [
+					"chat.html"
 				],
 				"priority": 0
 			}

@@ -28,3 +28,33 @@ def toy_list():  # 玩具列表
     RET["data"] = toys_list
 
     return jsonify(RET)
+
+
+@toy.route("/device_toy_id", methods=["POST"])
+def device_toy_id():  # 验证设备id
+    RET["code"] = 0
+    RET["msg"] = "开机成功"
+    RET["data"] = {}
+
+    device_id = request.form.get("device_id")  # 获取设备id
+
+    # 判断设备id是否在设备表中
+    if MONGO_DB.devices.find_one({"device_id": device_id}):
+        # 查询设备id是否在玩具表中
+        toy_info = MONGO_DB.toys.find_one({"device_id": device_id})
+        if toy_info:
+            # RET添加键值,获取玩具id
+            RET["data"]["toy_id"] = str(toy_info.get("_id"))
+            # 音频文件
+            RET["data"]["audio"] = "success.mp3"
+            return jsonify(RET)
+        else:
+            # 已授权的设备,但是没有绑定主人
+            RET["msg"] = "找小主人"
+            RET["data"]["audio"] = "Nobind.mp3"
+            return jsonify(RET)
+    else:
+        # 不在设备表中，说明是未授权，或者是冒牌的！
+        RET["msg"] = "联系玩具厂"
+        RET["data"]["audio"] = "Nodevice.mp3"
+        return jsonify(RET)

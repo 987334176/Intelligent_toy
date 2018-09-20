@@ -3,7 +3,9 @@
 		"refer": [
 			"phone.html",
 			"main.html",
-			"login.html"
+			"login.html",
+			"message.html",
+			"user_info.html"
 		],
 		"resources": [
 			"main.html"
@@ -33,6 +35,11 @@
 	"qrcode.html": {
 		"refer": [
 			"bind_toy.html"
+		]
+	},
+	"message.html": {
+		"refer": [
+			"chat.html"
 		]
 	}
 }

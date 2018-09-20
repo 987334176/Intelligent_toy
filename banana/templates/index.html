@@ -8,16 +8,20 @@
 <body>
 <audio src="" autoplay="autoplay" controls id="player"></audio>
 <br>
+<input type="text" id="device_id">
+<button onclick="start_toy()">玩具开机键</button>
+<br>
 <button onclick="start_reco()">开始废话</button>
 <br>
 <button onclick="stop_reco()">发送语音</button>
 </body>
 <script src="/static/recorder.js"></script>
+<script src="/static/jquery.min.js"></script>
 <script type="application/javascript">
     // 获取音频文件
-    var get_file = "http://192.168.11.86:9527/get_audio/";
-    // 创建 WebSocket 对象
-    var ws = new WebSocket("ws://192.168.11.86:9528/toy/123456");
+    var get_file = "http://192.168.11.40:9527/get_audio/";
+
+    var ws = null;  // WebSocket 对象
     var reco = null;
     // 创建AudioContext对象
     var audio_context = new AudioContext();
@@ -56,13 +60,32 @@
         })
     }
 
-    ws.onmessage = function (data) {  // 客户端接收服务端数据时触发
-        // console.log(get_file + data.data);
-        var content = JSON.parse(data.data);
-        console.log(content);
-        // 修改id为player的src属性,实现自动播放
-        document.getElementById("player").src = get_file + content.data;
-        console.log(content.from_user + "给你点了一首歌");
+    function start_toy() {  // 玩具开机
+        // 获取输入的设备id
+        var device_id = document.getElementById("device_id").value;
+        // 发送post请求
+        $.post(
+            // 这里的地址必须是127.0.0.1,否则会有跨域问题
+            "http://127.0.0.1:9527/device_toy_id",
+            // 发送设备id
+            {device_id: device_id},
+            function (data) {
+                console.log(data);
+                toy_id = data.data.toy_id;  // 玩具id
+                // 修改audio标签的src属性
+                document.getElementById("player").src = get_file + data.data.audio;
+                if (toy_id) {  // 判断玩具id存在时
+                    ws = new WebSocket("ws://192.168.11.40:9528/toy/" + toy_id);
+                    ws.onmessage = function (data) {
+                        // console.log(get_file + data.data);
+                        var content = JSON.parse(data.data);  //反序列化数据
+                        document.getElementById("player").src = get_file + content.data;
+                        console.log(content.from_user + "给你点了一首歌");
+                    }
+                }
+            }, "json"
+            // 规定预期的服务器响应的数据类型为json
+        );
     }
 
 

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/chat.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">与xxx进行对话</h1>
+		</header>
+		<div class="mui-content" id="chat_list">
+			<div class="leftd">
+				<img src="avatar/girl.jpg" class="leftd_h" />
+				<div class="speech left">点击播放</div>
+			</div>
+			<div class="rightd">
+				<img src="avatar/girl.jpg" class="rightd_h" />
+				<div class="speech right">点击播放</div>
+			</div>
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="talk">
+				<span class="mui-icon mui-icon-speech"></span>
+				<span class="mui-tab-label">按住说话</span>
+			</a>
+		</nav>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init({
+			//手势事件配置
+			gestureConfig: {
+				tap: true, //默认为true
+				doubletap: true, //默认为false
+				longtap: false, //默认为false
+				swipe: true, //默认为true
+				drag: true, //默认为true
+				hold: true, //默认为false，不监听
+				release: true //默认为false，不监听
+			}
+		});
+		var index = null;
+		var Sdata=null;
+		mui.plusReady(function() {
+			index = plus.webview.getWebviewById("HBuilder");
+			Sdata = plus.webview.currentWebview();
+		})
+		var rec = null;
+
+		document.getElementById("talk").addEventListener("hold", function() {
+			mui.toast("按住了");
+			rec = plus.audio.getRecorder();  // 获取当前设备的录音对象
+			rec.record({  // 调用设备麦克风进行录音操作
+				filename: "_doc/audio/",  // 保存录音文件的路径,如果以"/"结尾则表明是路径，文件名由录音程序自动生成。
+				format: "amr"  // 录音文件的格式
+			}, function(p) {
+				console.log(p);
+				create_chat("self", p);  // 调用自定义方法
+				mui.fire(index, "send_msg", {  // 发送数据为index页面
+					filename: p,
+					to_user:Sdata.friend_id
+				});
+			});
+		})
+
+		document.getElementById("talk").addEventListener("release", function() {
+			mui.toast("松开了");
+			rec.stop();  // 停止录音
+		})
+
+		function create_chat(who, p) {
+			// 构建div，一次说话，就是一个div
+//			<div class="leftd">
+//				<img src="avatar/girl.jpg" class="leftd_h" />
+//				<div class="speech left">点击播放</div>
+//			</div>
+			// 默认显示在左边
+			var div1class = "leftd";
+			var imgclass = "leftd_h";
+			var div2class = "speech left";
+
+			// 左右列表排序效果只是class不一样而已！
+			// 这里做一个判断，当为self，class改为right
+			if(who == "self") {
+				div1class = "rightd";
+				imgclass = "rightd_h";
+				div2class = "speech right";
+			}
+
+			var div1tag = document.createElement("div");
+			div1tag.className = div1class;
+			var imgtag = document.createElement("img");
+			imgtag.className = imgclass;
+			imgtag.src = "avatar/girl.jpg"
+			var div2tag = document.createElement("div");
+			div2tag.className = div2class;
+			div2tag.innerText = "点击播放";
+			div2tag.onclick = function() {
+				// p 可能是一个名字 也有可能是一个 路径
+				console.log(p);
+				// createPlayer创建音频播放对象,play播放音频
+				plus.audio.createPlayer(p).play();
+			}
+
+			div1tag.appendChild(imgtag);
+			div1tag.appendChild(div2tag);
+
+			document.getElementById("chat_list").appendChild(div1tag);
+
+		}
+		// 生成几个div。一个div就是一次说话
+		create_chat("self");  // self表示我
+		create_chat("w");  // 这个可以随便写，表示其他
+		create_chat("self");
+		create_chat("2");
+		create_chat("2");
+
+		
+	</script>
+
+</html>

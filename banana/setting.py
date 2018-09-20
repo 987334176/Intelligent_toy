@@ -20,3 +20,14 @@ AUDIO_FILE = os.path.join(os.path.dirname(__file__), "audio")  # 音频
 AUDIO_IMG_FILE = os.path.join(os.path.dirname(__file__), "audio_img")  # 音频图片
 
 DEVICE_CODE_PATH = os.path.join(os.path.dirname(__file__), "device_code")  # 二维码
+
+# 百度AI配置
+APP_ID = "11799986"
+API_KEY = "3v3igzCkVFUDwFByNEEhNfv7"
+SECRET_KEY = "jRnwLE7kzC1aRi2FD10OQY3y9OgfTz0F"
+SPEECH = {
+    "spd": 4,
+    'vol': 5,
+    "pit": 8,
+    "per": 4
+}
