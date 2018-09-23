@@ -50,6 +50,8 @@
 | /device_toy_id/ | 验证设备id | POST |
 | /chat_list/ | 聊天记录列表 | POST |
 | /get_msg/ | 获取聊天语言文件 | POST |
+| /get_msg_list/ | 获取角标 | POST |
+
 
 ## 运行方式
 

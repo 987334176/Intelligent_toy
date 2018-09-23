@@ -7,6 +7,7 @@ from uuid import uuid4
 from setting import AUDIO_FILE,CHAT_FILE
 from serv import content
 from utils import baidu_ai
+from utils import chat_redis
 import setting
 from bson import ObjectId
 import time
@@ -56,7 +57,15 @@ def toy(tid):  # 玩具连接
                     "data": file_name
                 }
 
-                other_user_socket.send(json.dumps(send_str))
+                if other_user_socket:  # 当websocket连接存在时
+                    chat_redis.save_msg(tid, to_user)  # 保存消息到redis
+                    # 发送数据
+                    other_user_socket.send(json.dumps(send_str))
+                else:
+                    # 离线消息
+                    chat_redis.save_msg(tid, to_user)
+
+                # 保存聊天记录到MongoDB
                 _add_chat(tid, to_user, send_str.get("data"))
 
             to_user = ""
@@ -119,8 +128,14 @@ def user_app(uid):  # 手机app连接
                 # 后缀必须是mp3的
                 "data": msg_file_name
             }
-            # 发送数据给前端页面
-            other_user_socket.send(json.dumps(send_str))
+            if other_user_socket:
+                chat_redis.save_msg(uid, to_user)
+                # 发送数据给前端页面
+                other_user_socket.send(json.dumps(send_str))
+            else:
+                # 保存redis
+                chat_redis.save_msg(uid, to_user)
+
             # 添加聊天记录到数据库
             _add_chat(uid, to_user, f"{file_name}.mp3")
             # 最后一定要清空这2个变量，否则造成混乱

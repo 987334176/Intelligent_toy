@@ -38,13 +38,13 @@
 					// 循环好友列表
 					for (var i = 0; i < data.data.length; i++) {
 						// 执行自定义方法，渲染页面
-						create_content(data.data[i]);
+						create_content(data.data[i],Sdata.msg_data);
 					}
 				}
 			)
 		});
 		
-		function create_content(content){	
+		function create_content(content,msg_data){	
 //			<li class="mui-table-view-cell mui-media">
 //		        <a href="javascript:;">
 //		            <img class="mui-media-object mui-pull-left" src="../images/shuijiao.jpg">
@@ -54,14 +54,25 @@
 //		            </div>
 //		        </a>
 //		    </li>
+			// 角标
+			var spantag = document.createElement("span");
+			spantag.className = "mui-badge mui-badge-red";
+			// content是一个字典,要获取friend_id。不能使用get，只能使用.
+			// 如果获取不到,值为undefine
+			spantag.innerText = msg_data[content.friend_id]
+			
 			var litag = document.createElement("li");
 			litag.className = "mui-table-view-cell mui-media";
 			var atag = document.createElement("a");
 			atag.id = content.friend_id;
 			// 点击事件
 			atag.onclick = function(){
-				console.log(this.id);
-				open_chat(this.id);  //执行自定义方法open_chat
+//				console.log(this.id);
+				//执行自定义方法open_chat
+				open_chat(this.id,spantag.innerText);
+				spantag.innerText = 0;  // 重置为0
+				
+				
 			}
 
 			var imgtag = document.createElement("img");
@@ -79,12 +90,17 @@
 		 	litag.appendChild(atag);
 		 	atag.appendChild(imgtag);
 		 	atag.appendChild(divtag);
+		 	atag.appendChild(spantag);
 		 	divtag.appendChild(ptag);
 		 	
 		 	document.getElementById("friend_list").appendChild(litag);
 		}
 		
-		function open_chat(friend_id){  // 打开chat.html
+		function open_chat(friend_id,cut_count){  // 打开chat.html
+			// 获取index.html
+			var index = plus.webview.getWebviewById("HBuilder")
+			// 执行fire
+			mui.fire(index,"cut_msg_count",{cut:cut_count})
 			mui.openWindow({
 				url:"chat.html",
 				id:"chat.html",

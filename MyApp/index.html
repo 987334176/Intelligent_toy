@@ -17,7 +17,9 @@
 				<span class="mui-tab-label">首页</span>
 			</a>
 			<a class="mui-tab-item" id="message">
-				<span class="mui-icon mui-icon-chatbubble"></span>
+				<span class="mui-icon mui-icon-chat">
+					<span class="mui-badge mui-badge-red" id="msg_count">0</span>
+				</span>
 				<span class="mui-tab-label">消息</span>
 			</a>
 			<a class="mui-tab-item">
@@ -32,6 +34,7 @@
 	</body>
 	<script type="text/javascript" charset="utf-8">
 		var ws = null; // websocket对象
+		var msg_data = null;  // 消息数据
 		mui.init({
 			subpages: [{
 				url: "main.html",
@@ -45,8 +48,37 @@
 				console.log('已结登录了！');
 				//连接websocket连接
 				ws = new WebSocket("ws://" + window.ws_serv + "/app/" + plus.storage.getItem("user"))
+				
+				// 发送post请求
+				console.log(window.serv + "/get_msg_list");
+				mui.post(
+					// 访问消息列表
+					window.serv + "/get_msg_list", {
+						user_id: plus.storage.getItem("user")
+					},
+					function(data) {
+						console.log(JSON.stringify(data));
+						//  {"code":0,"data":{"5ba0f1f2e12532418089bf88":1,"count":1},"msg":""}
+						msg_data = data.data;
+						// 修改消息选项卡的角标数字
+						document.getElementById("msg_count").innerText = msg_data.count;
+					}
+				);
+				
 				// 客户端接收服务端数据时触发
-				ws.onmessage = function() {};
+				ws.onmessage = function(data) {
+					console.log(data.data);
+					var msg = JSON.parse(data.data);
+					var chat = plus.webview.getWebviewById("chat.html");
+					mui.fire(chat, "new_msg", {  // 向chat.html传值
+						data: msg
+					});
+					var msg_count = document.getElementById("msg_count");
+					// 当前页面加1
+					msg_count.innerText = parseInt(msg_count.innerText) + 1;
+					// 加1,用于message.html显示
+					msg_data[msg.from_user]++;
+				};
 			}
 			// 自动重连
 			ws.onclose = function() {
@@ -62,7 +94,9 @@
 				styles: window.styles,
 				extras: {
 					// 传输用户id,给message.html
-					user_id: plus.storage.getItem("user")
+					user_id: plus.storage.getItem("user"),
+					msg_data: msg_data,
+					//  "data":{"5ba0f1f2e12532418089bf88":1,"count":1}
 				}
 			})
 		});
@@ -141,7 +175,15 @@
 				});
 			});
 
-		})
+		});
+		
+		// 监听cut_msg_count事件,由message.html向index.html执行fire
+		document.addEventListener("cut_msg_count", function(data) {
+			var msg_count = document.getElementById("msg_count");
+			var cut = parseInt(data.detail.cut);  // parseInt表示强制转换
+			var count = parseInt(msg_count.innerText);  // 默认获取innerText是字符串,需要强制转换
+			msg_count.innerText = count - cut;  // 总数 减去 点击聊天会话的数量,比如小甜甜的
+		});
 
 		function dataURLtoBlob(dataurl) { // 数据转换为Blob
 			// 逻辑很复杂,这里不解释了。直接用就可以了！

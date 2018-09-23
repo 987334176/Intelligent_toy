@@ -144,12 +144,28 @@
     }
 
     function recv_msg() {
+        var to_user = document.getElementById("to_user").innerText;
+        var player = document.getElementById("player");
+
         to_user = document.getElementById("to_user").innerText;
         $.post(
             serv + "/get_msg",
             {user_id: toy_id, sender: to_user},
             function (data) {
-                document.getElementById("player").src = get_chat + data.data;
+                // shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值
+                var msg = data.data.shift();
+                document.getElementById("to_user").innerText = msg.sender;
+                player.src = get_chat + msg.msg;  //修改audio标签src属性
+                // onended 事件在视频/音频(audio/video)播放结束时触发
+                player.onended = function () {
+                    // 如果长度大于0,也就是有1条或者多条时
+                    if(data.data.length > 0){
+                        //修改audio标签src属性，有多条时，会轮询触发
+                       player.src = get_chat + data.data.shift().msg;
+                    }else{
+                       return null;
+                    }
+                }
             }, "json"
         )
     }
