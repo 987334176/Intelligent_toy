@@ -54,6 +54,7 @@
 			atag.onclick = function() {
 				console.log(this.id);
 				//openPlayer(this.id);
+				open_toy_info(this.id);  //打开玩具管理页面
 			}
 
 			var imgtag = document.createElement("img");
@@ -72,7 +73,7 @@
 			atag.appendChild(imgtag);
 			atag.appendChild(divtag);
 			divtag.appendChild(ptag);
- 
+
 			document.getElementById("toy_list").appendChild(litag);
 
 		}
@@ -83,6 +84,16 @@
 				id: "qrcode.html",
 			})
 		});
+		
+		function open_toy_info(toy_id) {  //打开玩具管理页面
+			mui.openWindow({
+				url: "toy_info.html",
+				id: "toy_info.html",
+				extras: {
+					toy_id: toy_id
+				}
+			})
+		}
 	</script>
 
 </html>

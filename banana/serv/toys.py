@@ -58,3 +58,18 @@ def device_toy_id():  # 验证设备id
         RET["msg"] = "联系玩具厂"
         RET["data"]["audio"] = "Nodevice.mp3"
         return jsonify(RET)
+
+
+@toy.route("/toy_info", methods=["POST"])
+def toy_info():  # 玩具管理页面
+    toy_id = request.form.get("toy_id")
+    print(toy_id)
+    toy = MONGO_DB.toys.find_one({"_id":ObjectId(toy_id)})
+
+    toy["_id"] = str(toy.get("_id"))
+
+    RET["code"] = 0
+    RET["msg"] = ""
+    RET["data"] = toy
+
+    return jsonify(RET)

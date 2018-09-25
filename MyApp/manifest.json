@@ -136,7 +136,8 @@
 					"phone.html",
 					"login.html",
 					"message.html",
-					"user_info.html"
+					"user_info.html",
+					"req_list.html"
 				],
 				"priority": 0
 			},
@@ -165,14 +166,16 @@
 			"toy_manager.html": {
 				"resources": [],
 				"refer": [
-					"qrcode.html"
+					"qrcode.html",
+					"toy_info.html"
 				],
 				"priority": 0
 			},
 			"qrcode.html": {
 				"resources": [],
 				"refer": [
-					"bind_toy.html"
+					"bind_toy.html",
+					"add_req.html"
 				],
 				"priority": 0
 			},
@@ -180,6 +183,20 @@
 				"resources": [],
 				"refer": [
 					"chat.html"
+				],
+				"priority": 0
+			},
+			"toy_info.html": {
+				"resources": [],
+				"refer": [
+					"qrcode.html"
+				],
+				"priority": 0
+			},
+			"req_list.html": {
+				"resources": [],
+				"refer": [
+					"acc_ref_req.html"
 				],
 				"priority": 0
 			}

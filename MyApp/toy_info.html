@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">玩具详情</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-row" style="text-align: center;">
+				<img src="" id="avatar" style="width: 300px;height: 300px;border-radius: 50%;" />
+			</div>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					玩具名称 ：<span id="toy_name"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					所属主人 ：<span id="baby_name"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					设备编号 ：<span id="device_id"></span>
+				</li>
+			</ul>
+			<div class="mui-row" style="text-align: center;">
+				玩具通讯录
+			</div>
+			<ul class="mui-table-view mui-grid-view" id="contacts">
+				<li class="mui-table-view-cell mui-media mui-col-xs-3">
+					<a id="add_friend">
+						<img class="mui-media-object" src="images/add.png" style="border-radius: 50%;width: 75px;height: 75px;">
+						<div class="mui-media-body">添加好友</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		var Sdata = null;
+		mui.plusReady(function() {
+			Sdata = plus.webview.currentWebview();
+			mui.post(
+				window.serv + "/toy_info", {
+					toy_id: Sdata.toy_id
+				},
+				function(data) {
+					console.log(JSON.stringify(data));
+					document.getElementById("avatar").src = "avatar/" + data.data.avatar;
+					document.getElementById("toy_name").innerText = data.data.toy_name;
+					document.getElementById("baby_name").innerText = data.data.baby_name;
+					document.getElementById("device_id").innerText = data.data.device_id;
+
+					for(var i = 0; i < data.data.friend_list.length; i++) {
+						create_friend(data.data.friend_list[i]);
+					}
+				}
+			);
+		})
+
+		function create_friend(friend) {
+			var litag = document.createElement("li");
+			litag.className = "mui-table-view-cell mui-media mui-col-xs-3";
+			var atag = document.createElement("a");
+			atag.id = friend.friend_id
+			var imgtag = document.createElement("img");
+			imgtag.className = "mui-media-object";
+			imgtag.style.borderRadius = "50%";
+			imgtag.style.width = "75px";
+			imgtag.style.height = "75px";
+
+			imgtag.src = "avatar/" + friend.friend_avatar;
+			var divtag = document.createElement("div");
+			divtag.innerText = friend.friend_remark;
+			divtag.className = "mui-media-body";
+
+			litag.appendChild(atag);
+			atag.appendChild(imgtag);
+			atag.appendChild(divtag);
+
+			document.getElementById("contacts").appendChild(litag);
+
+		}
+
+		document.getElementById("add_friend").addEventListener("tap", function() {
+//			var device_id = document.getElementById("device_id").innerText;
+//			console.log(device_id);
+			mui.openWindow({
+				url: "qrcode.html",
+				id: "qrcode.html",
+				extras:{
+					toy_id:Sdata.toy_id
+				}
+			})
+		})
+	</script>
+
+</html>

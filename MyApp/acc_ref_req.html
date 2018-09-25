@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">处理好友请求</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="" id="avatar">
+						<div class="mui-media-body">
+							<span id="user_nick"></span>
+							<p class="mui-ellipsis" id="req_msg"></p>
+						</div>
+					</a>
+				</li>
+			</ul>
+
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>好友备注</label>
+					<input type="text" class="mui-input-clear" placeholder="给好友起的响亮的2B名字" id="remark">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="ido">I Do</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-action-back" id="goodman">好人卡</button>
+				</div>
+			</form>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		var Sdata = null;
+		mui.plusReady(function() {
+			Sdata = plus.webview.currentWebview();
+			mui.post(
+				window.serv + "/get_req", {
+					req_id: Sdata.req_id
+				},
+				function(data) {
+					console.log(JSON.stringify(data));
+					document.getElementById("avatar").src = "avatar/" + data.data.avatar;
+					document.getElementById("user_nick").innerText = data.data.user_nick;
+					document.getElementById("req_msg").innerText = data.data.req_msg;
+				}
+			)
+		})
+
+		document.getElementById("ido").addEventListener("tap", function() {
+			var remark = document.getElementById("remark").value;
+			mui.post(
+				window.serv + "/acc_req", {
+					req_id: Sdata.req_id,
+					remark:remark
+				},
+				function(data) {
+					console.log(JSON.stringify(data));
+				}
+			)
+		})
+
+		document.getElementById("goodman").addEventListener("tap", function() {
+			mui.post(
+				window.serv + "/ref_req", {
+					req_id: Sdata.req_id
+				},
+				function(data) {
+					console.log(JSON.stringify(data));
+				}
+			)
+		})
+	</script>
+
+</html>

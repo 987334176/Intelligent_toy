@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">玩具的好友请求</h1>
+		</header>
+		<div class="mui-content" >
+		    <ul class="mui-table-view" id="req_list">
+
+		        
+		    </ul>
+		</div>
+	</body>
+	<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init()
+		mui.plusReady(function(){
+			mui.post(
+				window.serv + "/req_list",
+				{user_id:plus.storage.getItem("user")},
+				function(data){
+					console.log(JSON.stringify(data));
+					for (var i = 0; i < data.data.length; i++) {
+						create_req(data.data[i])
+					}
+				}
+			)
+		})
+		
+		function create_req(req){		
+			var litag = document.createElement("li");
+			litag.className = "mui-table-view-cell mui-media";
+			var atag = document.createElement("a");
+			atag.id = req._id;
+			// 点击事件 周一把这儿写了 绑定事件
+			atag.onclick = function(){
+				console.log(this.id);
+				
+				open_req(this.id);
+				
+			}
+			
+			
+			var imgtag = document.createElement("img");
+			imgtag.className = "mui-media-object mui-pull-left";
+			
+			imgtag.src = "avatar/" + req.avatar;
+			
+			var divtag = document.createElement("div");
+			divtag.className = "mui-media-body";
+			divtag.innerText = req.user_nick;
+			var ptag = document.createElement("p");
+			ptag.className = "mui-ellipsis";
+			ptag.innerText = req.req_msg;
+		 	
+		 	litag.appendChild(atag);
+		 	atag.appendChild(imgtag);
+		 	atag.appendChild(divtag);
+		 	divtag.appendChild(ptag);
+		 	
+		 	document.getElementById("req_list").appendChild(litag);
+		
+		}
+		
+		function open_req(req_id){
+			mui.openWindow({
+				url:"acc_ref_req.html",
+				id:"acc_ref_req.html",
+				extras:{
+					req_id:req_id
+				}
+			})
+		}
+	</script>
+</html>

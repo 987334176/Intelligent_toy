@@ -9,6 +9,7 @@ devs = Blueprint("devs", __name__)
 @devs.route("/yanzheng_qr", methods=["POST"])
 def yanzheng_qr():  # 验证二维码
     device_id = request.form.get("device_id")  # 获取设备id
+    print(device_id)
     if MONGO_DB.devices.find_one({"device_id": device_id}):  # 从数据库中查询设备id
         # 查询该玩具是不是已被用户绑定
         toy_info = MONGO_DB.toys.find_one({"device_id": device_id})
@@ -20,7 +21,9 @@ def yanzheng_qr():  # 验证二维码
 
         # 如果被绑定加好友逻辑开启
         if toy_info:
-            pass
+            RET["code"] = 1
+            RET["msg"] = "添加好友"
+            RET["data"] = {"toy_id": str(toy_info.get("_id"))}
 
     else:
         RET["code"] = 2

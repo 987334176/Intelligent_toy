@@ -8,8 +8,8 @@
  * @type _L4.$|Function
  */
 
-window.ws_serv = "192.168.11.49:9528";
-window.serv = "http://192.168.11.49:9527";
+window.ws_serv = "192.168.11.25:9528";
+window.serv = "http://192.168.11.25:9527";
 window.serv_imge = window.serv+"/get_image/";
 window.serv_audio = window.serv+"/get_audio/";
 window.serv_chat = serv + "/get_chat/";

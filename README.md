@@ -46,12 +46,16 @@
 | /yanzheng_qr/ | 验证二维码 | POST |
 | /bind_toy/ | 绑定玩具 | POST |
 | /toy_list/ | 玩具列表 | POST |
-| /friend_list/ |  好友列表 | POST |
 | /device_toy_id/ | 验证设备id | POST |
 | /chat_list/ | 聊天记录列表 | POST |
 | /get_msg/ | 获取聊天语言文件 | POST |
 | /get_msg_list/ | 获取角标 | POST |
-
+| /friend_list/ |  好友列表 | POST |
+| /add_req/ |   添加好友请求 | POST |
+| /req_list/ |   添加请求列表 | POST |
+| /get_req/ |  获取一个好友请求 | POST |
+| /acc_req/ |  允许一个好友请求 | POST |
+| /ref_req/ |  拒绝一个好友请求 | POST |
 
 ## 运行方式
 
@@ -61,6 +65,27 @@
 | HBuilder | 打开项目MyApp |
 | MongoDB | 执行命令`mongod` |
 | 夜神模拟器 | 最后启动,并执行`adb.bat` |
+
+## 导出表
+
+`mongoexport -d bananabase -c chat --type=json -f _id,title,nickname,avatar,audio,intro,category,play_count -o E:/git/Intelligent_toy/chat.json`
+
+`mongoexport -d bananabase -c sources --type=json -f _id,user_list -o ./sources.json`
+
+`mongoexport -d bananabase -c chat --type=json -f _id,user_list -o E:/git/Intelligent_toy/chat.json`
+
+`mongoexport -d bananabase -c devices --type=json -f _id,device_id -o E:/git/Intelligent_toy/devices.json`
+
+`mongoexport -d bananabase -c req --type=json -f _id,device_id -o E:/git/Intelligent_toy/MongoDB/req.json`
+
+`mongoexport -d bananabase -c req --type=json -f _id,req_user,req_type,req_toy,req_msg,avatar,user_remark,user_nick,status -o E:/git/Intelligent_toy/MongoDB/req.json`
+
+`mongoexport -d bananabase -c sources --type=json -f _id,title,nickname,avatar,audio,avatar,intro,category,play_count -o E:/git/Intelligent_toy/MongoDB/sources.json`
+
+`mongoexport -d bananabase -c toys --type=json -f _id,device_id,toy_name,baby_name,gender,avatar,bind_user,friend_list -o E:/git/Intelligent_toy/MongoDB/toys.json`
+
+`mongoexport -d bananabase -c users --type=json -f _id,username,password,age,nickname,gender,phone,avatar,bind_toy,friend_list -o E:/git/Intelligent_toy/MongoDB/users.json`
+
 
 
 ## 效果

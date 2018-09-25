@@ -5,7 +5,8 @@
 			"main.html",
 			"login.html",
 			"message.html",
-			"user_info.html"
+			"user_info.html",
+			"req_list.html"
 		],
 		"resources": [
 			"main.html"
@@ -29,17 +30,29 @@
 	},
 	"toy_manager.html": {
 		"refer": [
-			"qrcode.html"
+			"qrcode.html",
+			"toy_info.html"
 		]
 	},
 	"qrcode.html": {
 		"refer": [
-			"bind_toy.html"
+			"bind_toy.html",
+			"add_req.html"
 		]
 	},
 	"message.html": {
 		"refer": [
 			"chat.html"
+		]
+	},
+	"toy_info.html": {
+		"refer": [
+			"qrcode.html"
+		]
+	},
+	"req_list.html": {
+		"refer": [
+			"acc_ref_req.html"
 		]
 	}
 }
