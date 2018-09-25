@@ -68,15 +68,9 @@
 
 ## 导出表
 
-`mongoexport -d bananabase -c chat --type=json -f _id,title,nickname,avatar,audio,intro,category,play_count -o E:/git/Intelligent_toy/chat.json`
+`mongoexport -d bananabase -c chat --type=json -f _id,user_list -o E:/git/Intelligent_toy/MongoDB/chat.json`
 
-`mongoexport -d bananabase -c sources --type=json -f _id,user_list -o ./sources.json`
-
-`mongoexport -d bananabase -c chat --type=json -f _id,user_list -o E:/git/Intelligent_toy/chat.json`
-
-`mongoexport -d bananabase -c devices --type=json -f _id,device_id -o E:/git/Intelligent_toy/devices.json`
-
-`mongoexport -d bananabase -c req --type=json -f _id,device_id -o E:/git/Intelligent_toy/MongoDB/req.json`
+`mongoexport -d bananabase -c devices --type=json -f _id,device_id -o E:/git/Intelligent_toy/MongoDB/devices.json`
 
 `mongoexport -d bananabase -c req --type=json -f _id,req_user,req_type,req_toy,req_msg,avatar,user_remark,user_nick,status -o E:/git/Intelligent_toy/MongoDB/req.json`
 
@@ -100,5 +94,14 @@
 注册：
 
 ![Image text](https://github.com/987334176/Intelligent_toy/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE/%E7%94%A8%E6%88%B7%E6%B3%A8%E5%86%8C.png)
+
+聊天：
+
+![Image text](https://github.com/987334176/Intelligent_toy/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE/%E8%81%8A%E5%A4%A9.png)
+
+玩具详情：
+
+![Image text](https://github.com/987334176/Intelligent_toy/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE/%E7%8E%A9%E5%85%B7%E8%AF%A6%E6%83%85.png)
+
 
 Copyright (c) 2018-present, xiao You
