@@ -41,6 +41,7 @@ def toy(tid):  # 玩具连接
             msg_dict = json.loads(msg)
             to_user = msg_dict.get("to_user")
             msg_type = msg_dict.get("msg_type")
+            user_type = msg_dict.get("user_type")
 
         if to_user and file_name:
             other_user_socket = user_socket_dict.get(to_user)
@@ -50,12 +51,24 @@ def toy(tid):  # 玩具连接
                 ret = baidu_ai.my_nlp(q, tid)
                 other_user_socket.send(json.dumps(ret))
             else:
-                send_str = {
-                    "code": 0,
-                    "from_user": tid,
-                    "msg_type": "chat",
-                    "data": file_name
-                }
+                if user_type == "toy":
+                    res = setting.MONGO_DB.toys.find_one({"_id": ObjectId(to_user)})
+                    fri = [i.get("friend_remark") for i in res.get("friend_list") if i.get("friend_id") == tid][0]
+                    msg_file_name = baidu_ai.text2audio(f"你有来自{fri}的消息")
+                    send_str = {
+                        "code": 0,
+                        "from_user": tid,
+                        "msg_type": "chat",
+                        "user_type": "toy",
+                        "data": msg_file_name
+                    }
+                else:
+                    send_str = {
+                        "code": 0,
+                        "from_user": tid,
+                        "msg_type": "chat",
+                        "data": file_name,
+                    }
 
                 if other_user_socket:  # 当websocket连接存在时
                     chat_redis.save_msg(tid, to_user)  # 保存消息到redis

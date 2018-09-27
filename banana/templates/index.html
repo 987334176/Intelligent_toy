@@ -17,6 +17,7 @@
 <br>
 <button onclick="start_reco()">录制消息</button>
 <span id="to_user"></span>
+<span id="user_type"></span>
 <br>
 <button onclick="send_reco()">发送语音消息</button>
 <br>
@@ -82,8 +83,10 @@
 
     function send_audio() {
         var to_user = document.getElementById("to_user").innerText;
+        var user_type = document.getElementById("user_type").innerText;
         var send_str = {
-            "to_user": to_user
+            "to_user": to_user,
+            "user_type":user_type
         };
         ws.send(JSON.stringify(send_str));
         reco.exportWAV(function (wav_file) {
@@ -123,10 +126,12 @@
                     ws.onmessage = function (data) {
                         // console.log(get_music + data.data);
                         var content = JSON.parse(data.data);  //反序列化数据
+                        {#console.log(content);#}
                         // 判断消息类型
                         if (content.msg_type == "chat") {
                             document.getElementById("player").src = get_chat + content.data;
                             document.getElementById("to_user").innerText = content.from_user;
+                            document.getElementById("user_type").innerText = content.user_type;
                             console.log(content.from_user + "给你发送了一条消息");
                         }
                         if (content.msg_type == "music") {

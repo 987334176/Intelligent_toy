@@ -62,6 +62,7 @@ def bind_toy():  # 绑定玩具
             "friend_remark": remark,  # 好友称呼
             "friend_avatar": res.get("avatar"),  # 好友头像
             "friend_chat": str(chat_id),  # 好友聊天id
+            "user_type":"user"  # 用户类型
         }]
     }
 
@@ -76,6 +77,7 @@ def bind_toy():  # 绑定玩具
             "friend_remark": baby_name,
             "friend_avatar": toy_info.get("avatar"),
             "friend_chat": str(chat_id),
+            "user_type": "toy"  # 用户类型
         })
     else:
         # 更新好友
@@ -86,6 +88,7 @@ def bind_toy():  # 绑定玩具
             "friend_remark": baby_name,
             "friend_avatar": toy_info.get("avatar"),
             "friend_chat": str(chat_id),
+            "user_type": "toy"  # 用户类型
         }]
 
     MONGO_DB.users.update_one({"_id": ObjectId(user_id)}, {"$set": res})  # 更新用户记录

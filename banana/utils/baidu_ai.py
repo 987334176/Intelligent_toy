@@ -11,6 +11,9 @@ from uuid import uuid4
 # import setting
 import os
 from bson import ObjectId
+from utils import lowB_plus
+from pypinyin import lazy_pinyin, TONE2
+from utils import tuling
 
 client = AipSpeech(setting.APP_ID,setting.API_KEY,setting.SECRET_KEY)
 
@@ -47,23 +50,34 @@ def audio2text(file_name):
 
 def my_nlp(q,toy_id):
     # 1. 假设玩具说：q = 我要给爸爸发消息
-    print(q,"百度q")
     if "发消息" in q:
-        toy = setting.MONGO_DB.toys.find_one({"_id":ObjectId(toy_id)})
-        print(toy.get("friend_list"))
+        q = "".join(lazy_pinyin(q, style=TONE2))
+        print(q)
+        toy = setting.MONGO_DB.toys.find_one({"_id": ObjectId(toy_id)})
+        # print(toy.get("friend_list"))
         for i in toy.get("friend_list"):
-            if i.get("friend_remark") in q or i.get("friend_name") in q :
+            # 转换成拼音,即使同音字也能匹配
+            remark_pinyin = "".join(lazy_pinyin(i.get("friend_remark"), style=TONE2))
+            name_pinyin = "".join(lazy_pinyin(i.get("friend_name"), style=TONE2))
+            print(name_pinyin)
+            if remark_pinyin in q or name_pinyin in q:
                 res = text2audio(f"可以按消息键，给{i.get('friend_remark')}发消息了")
                 send_str = {
                     "code": 0,
                     "from_user": i.get("friend_id"),
                     "msg_type": "chat",
-                    "data": res
+                    "data": res,
+                    "user_type":i.get("user_type")
                 }
                 return send_str
 
     if "我要听" in q or "我想听" in q or "唱一首" in q:
-        sources = setting.MONGO_DB.sources.find({})
+        q = str(q).replace("我要听", "")
+        q = str(q).replace("我想听", "")
+        q = str(q).replace("唱一首", "")
+        print(q)
+        title = lowB_plus.my_nlp(q)
+        sources = setting.MONGO_DB.sources.find_one({"title": title})
         for i in sources:
             if i.get("title") in q:
                 send_str = {
@@ -74,9 +88,9 @@ def my_nlp(q,toy_id):
                 }
                 return send_str
 
+    answer = tuling.to_tuling(q, toy_id)
 
-
-    res = text2audio("对不起，我没明白你的意思")
+    res = text2audio(answer)
     send_str = {
         "code": 0,
         "from_user": toy_id,

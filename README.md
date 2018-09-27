@@ -7,8 +7,7 @@
 |---------|--------|
 | MyApp          | HBuilder项目 |
 | banana          | Flask项目 |
-| sources.json          | MongoDB表sources |
-| users.json          | MongoDB表users |
+| MongoDB          | MongoDB相关表 |
 | adb.bat          | HBuilder连接夜神模拟器，注意修改路径！ |
 
 注意：adb.bat要修改一下部分：
@@ -21,6 +20,38 @@
 
 请确保 adb.bat和HBuilder，夜神模拟器在同一个盘符下，比如D盘！
 
+## 项目结构
+```
+./
+├── audio  # 音频文件以及提示语
+├── audio_img  # 音频文件对应的图片
+├── chat  # 聊天语言文件
+├── device_code  # 玩具设备二维码,uuid4+时间戳生成的
+├── im_serv.py  # websocket服务
+├── manager.py  # App 后端接口
+├── QRcode.py  # 生成二维码图片
+├── serv  # 蓝图
+│   ├── chat.py  # 聊天相关接口
+│   ├── content.py  # 内容相关接口
+│   ├── devices.py  # 设备相关接口
+│   ├── friend.py  # 好友相关接口
+│   ├── get_file.py  # 文件相关接口
+│   └── toys.py  # 玩具相关接口
+├── setting.py  # 配置文件
+├── static  # 静态目录
+│   ├── jquery.min.js
+│   └── recorder.js
+├── templates  # 模板
+│   └── index.html
+├── utils  # 工具
+│   ├── baidu_ai.py  # 百度AI
+│   ├── chat_redis.py  # 连接redis,用来存储App消息通知
+│   ├── fenci.py  # 分词测试
+│   ├── lowB_plus.py  # 集成jieba gensim pypinyin
+│   └── tuling.py  # 图灵
+└── xiaopapa.py  # 爬虫
+```
+
 ## 运行环境
 
 | Project | version | Description |
@@ -30,6 +61,7 @@
 | HBuilder                | 1.0.2 | 无 |
 | MongoDB                | 3.4 | 库名为bananabase |
 | 夜神模拟器                | 6.2.1.1 | 无 |
+| Redis                | 3.2.10 | 无 |
 
 ## 功能
 
@@ -65,6 +97,21 @@
 | HBuilder | 打开项目MyApp |
 | MongoDB | 执行命令`mongod` |
 | 夜神模拟器 | 最后启动,并执行`adb.bat` |
+
+
+## 导出表
+`mongoimport --db bananabase --collection chat --file chat.json --type json`
+
+`mongoimport --db bananabase --collection devices --file devices.json --type json`
+
+`mongoimport --db bananabase --collection req --file req.json --type json`
+
+`mongoimport --db bananabase --collection sources --file sources.json --type json`
+
+`mongoimport --db bananabase --collection toys --file toys.json --type json`
+
+`mongoimport --db bananabase --collection users --file users.json --type json`
+
 
 ## 导出表
 

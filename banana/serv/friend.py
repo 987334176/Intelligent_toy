@@ -96,8 +96,10 @@ def acc_req():  # 允许一个好友请求
     # 1. 为 user 或 toy 添加 toy
     if req_info.get("req_type") == "toy":
         user_info = MONGO_DB.toys.find_one({"_id": ObjectId(req_info.get("req_user"))})
+        user_type = "toy"
     else:
         user_info = MONGO_DB.users.find_one({"_id": ObjectId(req_info.get("req_user"))})
+        user_type = "user"
 
     toy = MONGO_DB.toys.find_one({"_id": ObjectId(req_info.get("req_toy"))})
 
@@ -108,7 +110,8 @@ def acc_req():  # 允许一个好友请求
         "friend_name": toy.get("baby_name"),
         "friend_remark": req_info.get("user_remark"),
         "friend_avatar": toy.get("avatar"),
-        "friend_chat": str(chat_window.inserted_id)
+        "friend_chat": str(chat_window.inserted_id),
+        "user_type": "toy"
     }
 
     if req_info.get("req_type") == "toy":
@@ -126,7 +129,8 @@ def acc_req():  # 允许一个好友请求
         # 同意方的备注
         "friend_remark": remark if remark else user_name,
         "friend_avatar": user_info.get("avatar"),
-        "friend_chat": str(chat_window.inserted_id)
+        "friend_chat": str(chat_window.inserted_id),
+        "user_type":user_type  # 用户类型
     }
 
     MONGO_DB.toys.update_one({"_id": ObjectId(req_info.get("req_toy"))},
